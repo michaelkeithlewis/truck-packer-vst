@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(TruckPackerWrapper VERSION 0.1.1 LANGUAGES C CXX)
+project(TruckPackerWrapper VERSION 0.1.2 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,7 +27,7 @@ juce_add_binary_data(TruckPackerEmbeddedLoop
     NAMESPACE TruckPackerEmbedded
     SOURCES "${_tp_embedded_loop}")
 
-juce_add_plugin(TruckPackerWrapper
+set(_tp_plugin_opts
     COMPANY_NAME "Truck Packer"
     BUNDLE_ID com.truckpacker.dawwrapper
     IS_SYNTH TRUE
@@ -43,6 +43,11 @@ juce_add_plugin(TruckPackerWrapper
     MICROPHONE_PERMISSION_ENABLED FALSE
     MICROPHONE_PERMISSION_TEXT ""
 )
+if(WIN32)
+    list(APPEND _tp_plugin_opts NEEDS_WEBVIEW2 TRUE)
+endif()
+
+juce_add_plugin(TruckPackerWrapper ${_tp_plugin_opts})
 
 target_sources(TruckPackerWrapper
     PRIVATE
@@ -80,12 +85,14 @@ target_link_libraries(TruckPackerWrapper
 
 # Copy bundles next to the repo (macOS AU + VST3).
 set(_tp_stage "${CMAKE_SOURCE_DIR}/packaged-plugins")
+# JUCE artefact layout (macOS + Windows); TARGET_BUNDLE_DIR is macOS-only and breaks Windows CMake.
+set(_tp_vst3_out "${CMAKE_BINARY_DIR}/TruckPackerWrapper_artefacts/$<CONFIG>/VST3/Truck Packer.vst3")
 add_custom_command(
     TARGET TruckPackerWrapper_VST3
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${_tp_stage}"
     COMMAND ${CMAKE_COMMAND} -E rm -rf "${_tp_stage}/Truck Packer.vst3"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "$<TARGET_BUNDLE_DIR:TruckPackerWrapper_VST3>" "${_tp_stage}/Truck Packer.vst3"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${_tp_vst3_out}" "${_tp_stage}/Truck Packer.vst3"
     VERBATIM)
 
 if(APPLE)

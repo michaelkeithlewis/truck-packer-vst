@@ -41,7 +41,12 @@ function Find-InnoCompiler {
 }
 
 New-Item -ItemType Directory -Force -Path $Build | Out-Null
-cmake -S $Root -B $Build -DCMAKE_BUILD_TYPE=$Config
+
+$cmakeArgs = @("-S", $Root, "-B", $Build, "-DCMAKE_BUILD_TYPE=$Config")
+if ($env:JUCE_WEBVIEW2_PACKAGE_LOCATION -and $env:JUCE_WEBVIEW2_PACKAGE_LOCATION.Trim().Length -gt 0) {
+    $cmakeArgs += "-DJUCE_WEBVIEW2_PACKAGE_LOCATION=$($env:JUCE_WEBVIEW2_PACKAGE_LOCATION)"
+}
+& cmake @cmakeArgs
 cmake --build $Build --config $Config --parallel
 
 cmake "-DTP_BUILD_DIR=$Build" "-DTP_SOURCE_DIR=$Root" "-DTP_CONFIG=$Config" -P (Join-Path $Packaging "stage_plugins.cmake")

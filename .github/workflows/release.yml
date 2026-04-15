@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+# Quieter Node 20 deprecation warnings until actions default to Node 24.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
@@ -46,6 +50,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install WebView2 NuGet package (for JUCE NEEDS_WEBVIEW2)
+        shell: pwsh
+        run: |
+          $pkgRoot = "${env:GITHUB_WORKSPACE}/.nuget-webview2"
+          New-Item -ItemType Directory -Force -Path $pkgRoot | Out-Null
+          Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "$pkgRoot/nuget.exe"
+          & "$pkgRoot/nuget.exe" install Microsoft.Web.WebView2 -Version 1.0.2849.39 -OutputDirectory $pkgRoot
+          "JUCE_WEBVIEW2_PACKAGE_LOCATION=$pkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Inno Setup
         run: choco install innosetup -y

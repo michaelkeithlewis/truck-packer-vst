@@ -9,6 +9,8 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
 
+**Windows:** CMake needs the **Microsoft.Web.WebView2** NuGet package (headers + `WebView2LoaderStatic.lib`) because the editor uses WebView2. Either install it under `%USERPROFILE%\AppData\Local\PackageManagement\NuGet\Packages` (see JUCE’s `FindWebView2.cmake` hints), or pass `-DJUCE_WEBVIEW2_PACKAGE_LOCATION=C:/path/to/parent/of/Microsoft.Web.WebView2.*` where `nuget.exe install Microsoft.Web.WebView2 -OutputDirectory …` was run. The **Release** workflow does this automatically on GitHub-hosted runners.
+
 ## Automated releases (CI)
 
 Push a **version tag** matching `v*` (after bumping `project(... VERSION ...)` in `CMakeLists.txt` so filenames match):
