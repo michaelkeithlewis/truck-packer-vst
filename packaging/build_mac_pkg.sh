@@ -10,7 +10,7 @@ cmake --build "$BUILD" --parallel
 cmake -DTP_BUILD_DIR="$BUILD" -DTP_SOURCE_DIR="$ROOT" -DTP_CONFIG="$CONFIG" -P "$ROOT/packaging/stage_plugins.cmake"
 
 IDENT="com.truckpacker.plugins.pkg"
-VER="$(grep 'TruckPackerWrapper VERSION' "$ROOT/CMakeLists.txt" | head -1 | grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+' | head -1)"
+VER="$(grep 'TruckPackerWrapper VERSION' "$ROOT/CMakeLists.txt" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
 [[ -z "${VER}" ]] && VER="0.1.0"
 
 PKG_OUT="${ROOT}/packaging/TruckPacker-${VER}-macOS.pkg"

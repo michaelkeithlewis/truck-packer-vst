@@ -4,5 +4,9 @@ packaged-plugins/*
 !packaged-plugins/.gitkeep
 !packaged-plugins/README.txt
 packaging/_stage/
+packaging/_dmg_source/
+packaging/windows_dist/
 packaging/*.pkg
 packaging/*.zip
+packaging/*.dmg
+packaging/*-Windows-Setup.exe

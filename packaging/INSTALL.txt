@@ -1,6 +1,15 @@
 Truck Packer — install locations
 ================================
 
+Build artifacts (from this repo)
+--------------------------------
+  macOS DMG:   run packaging/build_mac_dmg.sh  → packaging/TruckPacker-<version>-macOS.dmg
+  macOS PKG:   run packaging/build_mac_pkg.sh  → packaging/TruckPacker-<version>-macOS.pkg
+  Windows EXE: install Inno Setup 6, then run packaging/build_win_installer.ps1
+               → packaging/TruckPacker-<version>-Windows-Setup.exe (and a .zip fallback)
+  Windows ZIP: same script always builds packaging/TruckPacker-<version>-Windows.zip
+
+
 This folder was produced by the packaging/stage_plugins.cmake script (or an installer built from it).
 
 macOS
