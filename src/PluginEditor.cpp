@@ -90,7 +90,7 @@ TruckPackerWrapperAudioProcessorEditor::TruckPackerWrapperAudioProcessorEditor (
     loopFader.setLookAndFeel (&loopFaderLnf);
     loopFader.setSliderStyle (juce::Slider::LinearVertical);
     loopFader.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 58, 22);
-    loopFader.setTooltip ("Loop: Downloads or Music folder — videoplayback.wav/.mp3/.mp4 (or set TRUCK_PACKER_LOOP). On Windows, WAV is most reliable. Instrument mode: audible when the fader is up without starting the timeline.");
+    loopFader.setTooltip ("Inspirational music: put videoplayback.wav/.mp3/.mp4 in Downloads, Desktop, Documents, Music, or Movies (or set TRUCK_PACKER_LOOP). WAV is most reliable on Windows. Instrument mode: hear it when this fader is up.");
     loopFader.setVelocityBasedMode (true);
     loopFader.setVelocityModeParameters (1.0, 1, 0.09, false);
     addAndMakeVisible (loopFader);
@@ -198,8 +198,8 @@ void TruckPackerWrapperAudioProcessorEditor::paint (juce::Graphics& g)
 
     auto faderArea = getLocalBounds().removeFromRight (faderStripWidth);
     g.setColour (juce::Colours::white.withAlpha (0.28f));
-    g.setFont (juce::FontOptions (10.5f).withKerningFactor (0.12f));
-    g.drawFittedText ("LOOP", faderArea.removeFromTop (16), juce::Justification::centred, 1);
+    g.setFont (juce::FontOptions (8.8f).withKerningFactor (0.08f));
+    g.drawFittedText ("INSPIRATIONAL\nMUSIC", faderArea.removeFromTop (26), juce::Justification::centred, 2);
 
     if (webView == nullptr)
     {
@@ -214,7 +214,9 @@ void TruckPackerWrapperAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
     auto faderStrip = bounds.removeFromRight (faderStripWidth);
-    loopFader.setBounds (faderStrip.reduced (8, 20).withTrimmedBottom (2));
+    auto faderForSlider = faderStrip;
+    faderForSlider.removeFromTop (26);
+    loopFader.setBounds (faderForSlider.reduced (8, 10).withTrimmedBottom (2));
 
     if (webView != nullptr)
     {

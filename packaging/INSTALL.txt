@@ -9,6 +9,8 @@ Build artifacts (from this repo)
                → packaging/TruckPacker-<version>-Windows-Setup.exe (and a .zip fallback)
   Windows ZIP: same script always builds packaging/TruckPacker-<version>-Windows.zip
 
+GitHub: use "Releases" to attach DMG/EXE/ZIP — not "Packages" (Packages is for npm/Docker/NuGet-style registries, not plug-in installers).
+
 
 This folder was produced by the packaging/stage_plugins.cmake script (or an installer built from it).
 

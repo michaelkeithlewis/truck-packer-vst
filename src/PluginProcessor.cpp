@@ -20,6 +20,8 @@ namespace
         const auto home = juce::File::getSpecialLocation (juce::File::userHomeDirectory);
         const juce::File dirs[] = {
             home.getChildFile ("Downloads"),
+            juce::File::getSpecialLocation (juce::File::userDesktopDirectory),
+            juce::File::getSpecialLocation (juce::File::userDocumentsDirectory),
             juce::File::getSpecialLocation (juce::File::userMusicDirectory),
             juce::File::getSpecialLocation (juce::File::userMoviesDirectory),
         };
@@ -42,7 +44,7 @@ TruckPackerWrapperAudioProcessor::TruckPackerWrapperAudioProcessor()
              "PARAMS",
              { std::make_unique<juce::AudioParameterFloat> (
                    loopParamId,
-                   "Video Loop",
+                   "Inspirational Music",
                    juce::NormalisableRange<float> (0.0f, 1.0f, 0.01f, 0.5f),
                    0.0f,
                    juce::AudioParameterFloatAttributes()
@@ -75,6 +77,12 @@ void TruckPackerWrapperAudioProcessor::tryLoadLoopFile()
             continue;
 
         std::unique_ptr<juce::AudioFormatReader> reader (formatManager.createReaderFor (file));
+        if (reader == nullptr)
+        {
+            if (auto in = file.createInputStream())
+                reader.reset (formatManager.createReaderFor (std::move (in)));
+        }
+
         if (reader == nullptr)
             continue;
 
@@ -134,6 +142,9 @@ void TruckPackerWrapperAudioProcessor::prepareToPlay (double sampleRate, int sam
         loopGainSmoothed.setCurrentAndTargetValue (raw->load());
 
     readPosition = 0.0;
+
+    if (loopLengthSamples <= 0)
+        tryLoadLoopFile();
 }
 
 void TruckPackerWrapperAudioProcessor::releaseResources() {}
