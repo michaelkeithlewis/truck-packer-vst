@@ -1,0 +1,38 @@
+Truck Packer — install locations
+================================
+
+This folder was produced by the packaging/stage_plugins.cmake script (or an installer built from it).
+
+macOS
+-----
+Copy (merge) into the system or user plug-in folders:
+
+  Library/Audio/Plug-Ins/VST3/Truck Packer.vst3
+  Library/Audio/Plug-Ins/Components/Truck Packer.component   (AU)
+
+Typical user paths (no admin password):
+
+  ~/Library/Audio/Plug-Ins/VST3/
+  ~/Library/Audio/Plug-Ins/Components/
+
+After copying, restart your DAW or rescan plug-ins.
+
+Windows
+-------
+Copy the entire folder:
+
+  VST3/Truck Packer.vst3
+
+into the 64-bit VST3 directory (common choice):
+
+  C:\Program Files\Common Files\VST3\
+
+The Microsoft Edge WebView2 runtime must be installed (Windows 11 includes it; on Windows 10 install "Evergreen WebView2 Runtime" from Microsoft if the embedded browser is blank).
+
+Loop audio file
+---------------
+Place an audio file the plug-in can decode in ~/Downloads (or ~/Music / ~/Movies), or set TRUCK_PACKER_LOOP to the full path:
+
+  videoplayback.mp4   (macOS: CoreAudio decoders)
+  videoplayback.wav   (all platforms, recommended on Windows)
+  videoplayback.mp3   (where JUCE MP3 / Windows Media decoders are enabled)

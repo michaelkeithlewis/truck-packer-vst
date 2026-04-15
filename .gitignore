@@ -1,0 +1,8 @@
+build/
+.cache/
+packaged-plugins/*
+!packaged-plugins/.gitkeep
+!packaged-plugins/README.txt
+packaging/_stage/
+packaging/*.pkg
+packaging/*.zip
