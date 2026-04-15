@@ -9,6 +9,17 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
 
+## Automated releases (CI)
+
+Push a **version tag** matching `v*` (after bumping `project(... VERSION ...)` in `CMakeLists.txt` so filenames match):
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+GitHub Actions (`.github/workflows/release.yml`) builds **macOS DMG + PKG** and **Windows ZIP + Inno Setup EXE**, then uploads everything to a **Release** for that tag.
+
 ## Installers — GitHub **Releases**, not **Packages**
 
 - **Packages** on GitHub is for registry formats (npm, Docker, NuGet, etc.). DMG / EXE / ZIP plug-in builds do **not** appear there.

@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: macOS (DMG + PKG)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: brew install ninja
+
+      - name: Configure & build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+
+      - name: Package
+        run: |
+          chmod +x packaging/build_mac_dmg.sh packaging/build_mac_pkg.sh
+          ./packaging/build_mac_dmg.sh Release
+          ./packaging/build_mac_pkg.sh Release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: truck-packer-macos
+          path: |
+            packaging/*.dmg
+            packaging/*.pkg
+          if-no-files-found: error
+
+  windows:
+    name: Windows (ZIP + EXE)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Add Inno Setup to PATH
+        shell: pwsh
+        run: |
+          $inno = "${env:ProgramFiles(x86)}\Inno Setup 6"
+          if (Test-Path $inno) { Add-Content $env:GITHUB_PATH $inno }
+
+      - name: Build & package
+        shell: pwsh
+        run: |
+          & "${{ github.workspace }}/packaging/build_win_installer.ps1" -Config Release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: truck-packer-windows
+          path: |
+            packaging/*.zip
+            packaging/*-Windows-Setup.exe
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: truck-packer-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Flatten files for release upload
+        run: |
+          mkdir -p upload
+          find artifacts -type f -exec cp -t upload/ {} +
+          ls -la upload/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Truck Packer ${{ github.ref_name }}
+          generate_release_notes: true
+          make_latest: true
+          files: upload/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

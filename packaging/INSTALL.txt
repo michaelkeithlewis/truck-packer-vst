@@ -11,6 +11,8 @@ Build artifacts (from this repo)
 
 GitHub: use "Releases" to attach DMG/EXE/ZIP — not "Packages" (Packages is for npm/Docker/NuGet-style registries, not plug-in installers).
 
+CI: pushing a git tag matching v* runs .github/workflows/release.yml and uploads macOS DMG/PKG plus Windows ZIP/EXE to that tag's Release (bump project(VERSION) in CMakeLists.txt first so artifact names match the release).
+
 
 This folder was produced by the packaging/stage_plugins.cmake script (or an installer built from it).
 
