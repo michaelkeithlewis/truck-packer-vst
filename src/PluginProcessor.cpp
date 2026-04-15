@@ -1,6 +1,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include <juce_audio_formats/juce_audio_formats.h>
+#include <memory>
+
+#if JUCE_TARGET_HAS_BINARY_DATA
+#include <BinaryData.h>
+#endif
 
 namespace
 {
@@ -8,6 +13,35 @@ namespace
 
     /** Safety cap so a full movie does not load entirely into RAM (~15 min of audio). */
     constexpr double kMaxLoopDurationSec = 900.0;
+
+    bool decodeReaderIntoLoop (std::unique_ptr<juce::AudioFormatReader> reader,
+                               juce::AudioBuffer<float>& loopBuffer,
+                               double& loopFileSampleRate,
+                               int& loopLengthSamples,
+                               double& readPosition)
+    {
+        if (reader == nullptr)
+            return false;
+
+        const auto maxSamples = (juce::int64) (reader->sampleRate * kMaxLoopDurationSec);
+        const auto numSamples = juce::jmin (reader->lengthInSamples, maxSamples);
+        if (numSamples <= 0)
+            return false;
+
+        const int ch = juce::jlimit (1, 2, (int) reader->numChannels);
+        loopBuffer.setSize (ch, (int) numSamples, false, true, true);
+
+        if (! reader->read (&loopBuffer, 0, (int) numSamples, 0, true, true))
+        {
+            loopBuffer.setSize (0, 0);
+            return false;
+        }
+
+        loopFileSampleRate = reader->sampleRate;
+        loopLengthSamples = (int) numSamples;
+        readPosition = 0.0;
+        return true;
+    }
 
     juce::Array<juce::File> getLoopFileCandidates()
     {
@@ -71,6 +105,22 @@ void TruckPackerWrapperAudioProcessor::tryLoadLoopFile()
     juce::AudioFormatManager formatManager;
     formatManager.registerBasicFormats();
 
+   #if JUCE_TARGET_HAS_BINARY_DATA
+    {
+        auto mem = std::make_unique<juce::MemoryInputStream> (
+            TruckPackerEmbedded::videoplayback_mp4,
+            (size_t) TruckPackerEmbedded::videoplayback_mp4Size,
+            false);
+
+        if (decodeReaderIntoLoop (std::unique_ptr<juce::AudioFormatReader> (formatManager.createReaderFor (std::move (mem))),
+                                  loopBuffer,
+                                  loopFileSampleRate,
+                                  loopLengthSamples,
+                                  readPosition))
+            return;
+    }
+   #endif
+
     for (const auto& file : getLoopFileCandidates())
     {
         if (! file.existsAsFile())
@@ -83,27 +133,8 @@ void TruckPackerWrapperAudioProcessor::tryLoadLoopFile()
                 reader.reset (formatManager.createReaderFor (std::move (in)));
         }
 
-        if (reader == nullptr)
-            continue;
-
-        const auto maxSamples = (juce::int64) (reader->sampleRate * kMaxLoopDurationSec);
-        const auto numSamples = juce::jmin (reader->lengthInSamples, maxSamples);
-        if (numSamples <= 0)
-            continue;
-
-        const int ch = juce::jlimit (1, 2, (int) reader->numChannels);
-        loopBuffer.setSize (ch, (int) numSamples, false, true, true);
-
-        if (! reader->read (&loopBuffer, 0, (int) numSamples, 0, true, true))
-        {
-            loopBuffer.setSize (0, 0);
-            continue;
-        }
-
-        loopFileSampleRate = reader->sampleRate;
-        loopLengthSamples = (int) numSamples;
-        readPosition = 0.0;
-        return;
+        if (decodeReaderIntoLoop (std::move (reader), loopBuffer, loopFileSampleRate, loopLengthSamples, readPosition))
+            return;
     }
 }
 

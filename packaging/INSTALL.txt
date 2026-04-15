@@ -42,10 +42,13 @@ into the 64-bit VST3 directory (common choice):
 
 The Microsoft Edge WebView2 runtime must be installed (Windows 11 includes it; on Windows 10 install "Evergreen WebView2 Runtime" from Microsoft if the embedded browser is blank).
 
-Loop audio file
----------------
-Place an audio file the plug-in can decode in ~/Downloads (or ~/Music / ~/Movies), or set TRUCK_PACKER_LOOP to the full path:
+Loop audio (inspirational music)
+--------------------------------
+A **videoplayback.mp4** is **embedded in the plug-in** at build time from `resources/videoplayback.mp4` (replace that file and rebuild to change it).
 
-  videoplayback.mp4   (macOS: CoreAudio decoders)
-  videoplayback.wav   (all platforms, recommended on Windows)
-  videoplayback.mp3   (where JUCE MP3 / Windows Media decoders are enabled)
+Optional overrides (first match wins after the embedded decode fails):
+
+  TRUCK_PACKER_LOOP   full path to any supported file
+  ~/Downloads, Desktop, Documents, Music, or Movies — filenames videoplayback.mp4 / .wav / .mp3
+
+On Windows, embedded MP4 may fail depending on decoders; use **TRUCK_PACKER_LOOP** or a **.wav** override if needed.

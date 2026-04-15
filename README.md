@@ -25,6 +25,6 @@ GitHub Actions (`.github/workflows/release.yml`) builds **macOS DMG + PKG** and 
 - **Packages** on GitHub is for registry formats (npm, Docker, NuGet, etc.). DMG / EXE / ZIP plug-in builds do **not** appear there.
 - Publish installers under [**Releases**](https://github.com/michaelkeithlewis/truck-packer-vst/releases): create a release, attach `TruckPacker-*-macOS.dmg`, `.pkg`, and `TruckPacker-*-Windows-Setup.exe` (or `.zip`) from `packaging/` after running the scripts in `packaging/INSTALL.txt`.
 
-## Inspirational music file
+## Inspirational music
 
-Put `videoplayback.mp4`, `.wav`, or `.mp3` in **Downloads**, **Desktop**, **Documents**, **Music**, or **Movies**, or set env **`TRUCK_PACKER_LOOP`** to the full path. See `packaging/INSTALL.txt` for installer paths and platform notes.
+The **MP4 in `resources/videoplayback.mp4`** is compiled into the binary (JUCE `juce_add_binary_data`). To change the loop, replace that file and rebuild. You can still override at runtime with **`TRUCK_PACKER_LOOP`** or loose `videoplayback.*` files in common folders (see `packaging/INSTALL.txt`).

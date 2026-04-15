@@ -90,7 +90,7 @@ TruckPackerWrapperAudioProcessorEditor::TruckPackerWrapperAudioProcessorEditor (
     loopFader.setLookAndFeel (&loopFaderLnf);
     loopFader.setSliderStyle (juce::Slider::LinearVertical);
     loopFader.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 58, 22);
-    loopFader.setTooltip ("Inspirational music: put videoplayback.wav/.mp3/.mp4 in Downloads, Desktop, Documents, Music, or Movies (or set TRUCK_PACKER_LOOP). WAV is most reliable on Windows. Instrument mode: hear it when this fader is up.");
+    loopFader.setTooltip ("Inspirational music is built into the plug-in. Optional: override with TRUCK_PACKER_LOOP or a videoplayback.* file in Downloads / Desktop / Documents / Music / Movies. Instrument mode: hear it when this fader is up.");
     loopFader.setVelocityBasedMode (true);
     loopFader.setVelocityModeParameters (1.0, 1, 0.09, false);
     addAndMakeVisible (loopFader);

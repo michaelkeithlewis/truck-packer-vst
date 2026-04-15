@@ -18,6 +18,15 @@ if(APPLE)
     list(APPEND _tp_formats AU)
 endif()
 
+set(_tp_embedded_loop "${CMAKE_SOURCE_DIR}/resources/videoplayback.mp4")
+if(NOT EXISTS "${_tp_embedded_loop}")
+    message(FATAL_ERROR "Bundled loop missing: ${_tp_embedded_loop}. Place videoplayback.mp4 in resources/ (copy from Downloads).")
+endif()
+
+juce_add_binary_data(TruckPackerEmbeddedLoop
+    NAMESPACE TruckPackerEmbedded
+    SOURCES "${_tp_embedded_loop}")
+
 juce_add_plugin(TruckPackerWrapper
     COMPANY_NAME "Truck Packer"
     BUNDLE_ID com.truckpacker.dawwrapper
@@ -58,6 +67,7 @@ endif()
 
 target_link_libraries(TruckPackerWrapper
     PRIVATE
+        TruckPackerEmbeddedLoop
         juce::juce_audio_formats
         juce::juce_audio_utils
         juce::juce_dsp
